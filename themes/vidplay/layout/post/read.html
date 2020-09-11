@@ -1,0 +1,257 @@
+<div class="content pt_shadow pt_vew_actv_pst">
+	<div class="pt_actv_hdr">
+		<div class="avatar">
+			<a href="{{USER url}}"><img src="{{USER avatar}}" alt="{{USER name}}"></a>
+		</div>
+		<div>
+			<h4><a href="{{USER url}}">{{USER name}}</a></h4>
+			<time class="published">{{TIME}}</time>
+		</div>
+	</div>
+	<p>{{DESC}}</p>
+	<div class="pt_actv_thmb">
+		<div class="avatar"><img src="{{IMAGE}}"></div>
+	</div>
+	<div class="comments_header pull-right">{{COMMENTS_COUNT}} {{LANG comments}}</div>
+	<div class="pt_act_likds">
+		<span onclick="PT_LikePost(this,'up');" data-post-likes="{{LIKES}}">
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="{{LIKED}}"><path fill="currentColor" d="M23,10C23,8.89 22.1,8 21,8H14.68L15.64,3.43C15.66,3.33 15.67,3.22 15.67,3.11C15.67,2.7 15.5,2.32 15.23,2.05L14.17,1L7.59,7.58C7.22,7.95 7,8.45 7,9V19A2,2 0 0,0 9,21H18C18.83,21 19.54,20.5 19.84,19.78L22.86,12.73C22.95,12.5 23,12.26 23,12V10M1,21H5V9H1V21Z"></path></svg> <span>{{LIKES}}</span>
+		</span>
+		<span onclick="PT_LikePost(this,'down');" data-post-dislikes="{{DIS_LIKES}}">
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="{{DIS_LIKED}}"><path fill="currentColor" d="M19,15H23V3H19M15,3H6C5.17,3 4.46,3.5 4.16,4.22L1.14,11.27C1.05,11.5 1,11.74 1,12V14A2,2 0 0,0 3,16H9.31L8.36,20.57C8.34,20.67 8.33,20.77 8.33,20.88C8.33,21.3 8.5,21.67 8.77,21.94L9.83,23L16.41,16.41C16.78,16.05 17,15.55 17,15V5C17,3.89 16.1,3 15,3Z"></path></svg> <span>{{DIS_LIKES}}</span>
+        </span>
+	</div>
+    <div class="clear"></div>
+	<hr>
+	<div class="comments-content content">
+		<form class="form submit-article-commet">
+			<div class="w100 pt_blogcomm_combo">
+				<?php if (IS_LOGGED): ?>
+					<img class="avatar" src="{{ME avatar}}" alt="{{ME name}} avatar" />
+				<?php endif; ?>
+				<textarea name="text" class="form-control" placeholder="{{LANG write_your_comment}}"></textarea>
+				<button class="btn pull-right btn-main" type="submit" data-toggle="tooltip" title="{{LANG publish}}">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+				</button>
+			</div>
+		</form>
+		<div class="user-comments width-100" id="post-comments">
+			{{COMMENTS}}
+		</div>
+		<?php if ($pt->count_cmt > 0): ?>
+			<div class="text-center"><div class="watch-video-show-more load-comments vp_vid_page_lmore">{{LANG show_more}}</div></div>
+		<?php endif; ?>
+	</div>
+</div>
+
+<script>
+  jQuery(window).ready(function($) {
+      $.fn.scrollTo = function (speed) {
+        if (typeof(speed) === 'undefined')
+            speed = 500;
+
+        $('html, body').animate({
+            scrollTop: ($(this).offset().top - 100)
+        }, speed);
+
+        return $(this);
+      };
+
+      <?php if (!empty($_GET['cl']) && is_numeric($_GET['cl'])): ?>
+        if ($('#comment-<?php echo($_GET['cl']); ?>').length) {
+          var comment = $('#comment-<?php echo($_GET['cl']); ?>');
+          comment.scrollTo().find('p').addClass('active');
+          PT_Delay(function(){
+            comment.find('p').removeClass('active')
+          },2000);
+        }
+      <?php elseif(!empty($_GET['rl']) && is_numeric($_GET['rl'])): ?>
+        if ($('#reply-<?php echo($_GET['rl']); ?>').length) {
+          var reply  = $('#reply-<?php echo($_GET['rl']); ?>');
+          reply.scrollTo().find('p').addClass('active');
+          PT_Delay(function(){
+            reply.find('p').removeClass('active');
+          },2000);
+        }
+      <?php endif; ?>
+  });
+
+  jQuery(document).ready(function($) {
+      $('.share-post-btn').click(function(event) {
+        $.ajax({
+          url: '{{LINK aj/main/share}}',
+          type: 'POST',
+          dataType: 'json',
+          data: {post_id: '{{ID}}'},
+        })
+        .done(function(data) {
+          if (data.status == 200) {
+            $('#post-shares').text(data.shared);
+          }
+        })
+        .fail(function() {
+          console.log("error");
+        })
+      });
+
+      $(".load-comments").click(function(event) {
+        var self    = $(this);
+        var last_id = ($(".article-comments").length > 0) ? $(".article-comments:last").attr('data-id') : 0;
+        $.ajax({
+          url: '{{LINK aj/load-more-comments}}',
+          type: 'POST',
+          dataType: 'json',
+          data: {last_id: last_id,activity_id:'{{ID}}'},
+        })
+        .done(function(data) {
+          if (data.status == 200) {
+            $('#post-comments').append(data.comments);
+          }
+          else{
+            self.text(data.message);
+          }
+        })
+        .fail(function() {
+          console.log("error");
+        })
+      });
+
+      var post = '{{ID}}';
+      var form = $(".submit-article-commet");
+      var hash = $('.main_session').val();
+      $(".submit-article-commet").ajaxForm({
+          url: '{{LINK aj/add-comment}}',
+          type:'POST',
+          data:{activity_id:'{{ID}}',hash:hash},
+          beforeSend: function() {
+            var query = form.find('textarea').val();
+
+            if (!query){
+               form.find('textarea').addClass('danger-field-border');
+               return false;
+            }
+
+            else if(query.length > 600){
+               form.find('textarea').addClass('danger-field-border');
+               return false;
+            }
+
+            else if (!$('#main-container').attr('data-logged') && $('#main-url').val()) {
+              window.location.href = PT_Ajax_Requests_File() + 'login?to=' + $('#main-url').val();
+              return false;
+            }
+          },
+          success: function(data) {
+            if (data.status == 200) {
+               if ($('.user-comments').find('.no-comments-found').length > 0) {
+                  $('.user-comments').html(data.comment);
+               }
+
+               else{
+                  $('.user-comments').prepend(data.comment);
+               }               
+               
+               form.find('textarea').val('');
+               form.find('textarea').removeClass('danger-field-border');
+            } 
+            else {
+               swal(
+                 'Error!',
+                 'Something went wrong.Please try again later!',
+                 'error'
+               );
+            }
+          }
+      });
+  });
+
+  function PT_DeleteComment(id) {
+      if (!$('#main-container').attr('data-logged') && $('#main-url').val()) {
+        window.location.href = PT_Ajax_Requests_File() + 'login?to=' + $('#main-url').val();
+        return false;
+      }
+
+      swal({
+        title: "{{LANG confirmation}}",
+        text: "{{LANG delete_confirmation}}",
+        type: "warning",
+        confirmButtonText:"{{LANG yes_del}}",
+        cancelButtonText:"{{LANG cancel}}",
+        showCancelButton:true,
+      })
+      .then(function(willDelete){
+         if (willDelete) {
+            if (!id) { return false; }
+
+            $('#comment-' + id).slideUp('fast');
+            $.post('{{LINK aj/delete-comment}}', {id: id});
+         }
+         else {
+            swal.close();
+         }
+      },
+      function(){
+         //pass
+      });      
+  }
+
+  function PT_LikePost(self,type){
+    if (!self || (type != 'up' && type != 'down')){
+      return false;
+    }
+
+    else if (!$('#main-container').attr('data-logged') && $('#main-url').val()) {
+      window.location.href = PT_Ajax_Requests_File() + 'login?to=' + $('#main-url').val();
+      return false;
+    }
+
+    var self = $(self);
+    $.ajax({
+      url: '{{LINK aj/like-system/}}' + type,
+      type: 'POST',
+      dataType: 'json',
+      data: {activity_id: '{{ID}}'}
+    })
+    .done(function(data) {
+      if (data.status == 200 && type == 'up' && data.code == 1){
+        self.find('span').text((data.up));
+        $('[data-post-dislikes]').find('span').text((data.down));
+        self.find('svg').addClass('active');
+        self.siblings().find('svg').removeClass('active');
+        
+      }
+
+      else if (data.status == 200 && type == 'up' && data.code == 0){
+        self.find('span').text((data.up));
+        $('[data-post-dislikes]').find('span').text((data.down));
+        self.find('svg').removeClass('active');
+        self.siblings().find('svg').removeClass('active');
+      }
+
+      else if (data.status == 200 && type == 'down' && data.code == 1){
+        self.find('span').text((data.down));
+        self.find('svg').addClass('active');
+        $('[data-post-likes]').find('span').text((data.up));
+        self.siblings().find('svg').removeClass('active');
+      }
+
+      else if (data.status == 200 && type == 'down' && data.code == 0){
+        self.find('span').text((data.down));
+        self.find('svg').removeClass('active');
+        $('[data-post-likes]').find('span').text((data.up));
+        self.siblings().find('i').removeClass('active');
+      }
+
+      else{
+        swal(
+           'Error!',
+           'Something went wrong.Please try again later!',
+           'error'
+         );
+      }
+    })
+    .fail(function() {
+      console.log("error");
+    })
+  }
+</script>
