@@ -1542,3 +1542,213 @@ function firebaseNotification($title, $body, $image, $data, $type)
     }
     curl_close($ch);
 }
+
+
+// ==================================== mtn staff =============================== //
+// POST REQUEST
+function postRequest($url, $headers, $payload)
+{
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    print_r(curl_error($ch));
+    $apiResponse = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($apiResponse === FALSE)
+        die('Request failed: ' . curl_error($ch));
+
+    curl_close($ch);
+
+    $jsonArrayResponse = json_decode($apiResponse);
+    return $jsonArrayResponse;
+}
+// POST REQUEST to get StatusCode
+function postRequestStatusCode($url, $headers, $payload)
+{
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    print_r(curl_error($ch));
+    $apiResponse = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($apiResponse === FALSE)
+        die('Request failed: ' . curl_error($ch));
+
+    curl_close($ch);
+
+    // $jsonArrayResponse = json_decode($apiResponse);
+    return $httpcode;
+}
+
+// get request
+function getRequest($url, $headers, $payload)
+{
+    $ch = curl_init($url);
+    curl_setopt_array($ch, array(
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_HTTPHEADER => $headers
+    ));
+
+    $apiResponse = curl_exec($ch);
+    $response = json_decode($apiResponse);
+
+    curl_close($ch);
+    return $response;
+}
+
+// Get token from mtn
+function momoAuthentication()
+{
+    $userName = "38f5e0b1-120f-47a9-9b84-fa2594b01703";
+    $password = "04ad8bf45d164e828a43d08fc13d0b72";
+
+    // $url = 'https://proxy.momoapi.mtn.co.rw/collection/token/';
+    $url = 'https://mtndeveloperapi.portal.mtn.co.rw/collection/token/';
+    $data = json_encode([
+        'Authorization' => '',
+        'Ocp-Apim-Subscription-Key' => ''
+    ]);
+    $headers = [
+        'Content-Type:application/json',
+        'Accept:application/json',
+        'Authorization:Basic ' . base64_encode($userName . ':' . $password),
+        'Ocp-Apim-Subscription-Key:cae4725b8bbc4e3cb5eda7959382504e'
+    ];
+
+    $serverResponse = postRequest($url, $headers, $data);
+
+    return $serverResponse;
+}
+
+// request payment
+function RequestPay($number, $Amount, $ExternalID, $refID, $period)
+{
+
+    // $url = 'https://proxy.momoapi.mtn.co.rw/collection/v1_0/requesttopay';
+    $url = 'https://mtndeveloperapi.portal.mtn.co.rw/collection/v1_0/requesttopay';
+    $AuthKey = momoAuthentication();
+    $AuthKey = $AuthKey->access_token;
+    if ($AuthKey) {
+        $Token = 'Bearer ' . $AuthKey;
+        $data = json_encode([
+            'amount' => $Amount,
+            'currency' => 'RWF',
+            'externalId' => $ExternalID,
+            'payer' => [
+                'partyIdType' => 'MSISDN',
+                'partyId' => $number
+            ],
+            'payerMessage' => $period,
+            'payeeNote' => 'Online Payment for tv1 prime'
+        ]);
+        $headers = [
+            'Content-Type:application/json',
+            'Accept:application/json',
+            'X-Target-Environment:mtnrwanda',
+            'Authorization: ' . $Token,
+            'X-Reference-Id: ' . $refID,
+            'X-Callback-Url' => 'https://prime.radiotv1.rw/api/v1.0/?type=callback',
+            'Content-Length: ' . strlen($data),
+            'Ocp-Apim-Subscription-Key:cae4725b8bbc4e3cb5eda7959382504e'
+        ];
+
+        $serverResponse = postRequestStatusCode($url, $headers, $data);
+
+        return $serverResponse;
+    } else {
+
+        return $AuthKey;
+    }
+}
+// request payment STATUS
+function RequestPayStatus($refID)
+{
+
+    // $url = 'https://proxy.momoapi.mtn.co.rw/collection/v1_0/requesttopay/'. $refID; //production
+    $url = 'https://mtndeveloperapi.portal.mtn.co.rw/collection/v1_0/requesttopay/' . $refID; //test
+    $AuthKey = momoAuthentication();
+    $AuthKey = $AuthKey->access_token;
+    if ($AuthKey) {
+        $Token = 'Bearer ' . $AuthKey;
+        $data = json_encode([
+            'Authorization' => '',
+            'Ocp-Apim-Subscription-Key' => ''
+        ]);
+        $headers = [
+            'X-Target-Environment:mtnrwanda',
+            'Authorization: ' . $Token,
+            'Ocp-Apim-Subscription-Key:cae4725b8bbc4e3cb5eda7959382504e'
+        ];
+
+        $serverResponse = getRequest($url, $headers, $data);
+
+        return $serverResponse;
+        // return $AuthKey;
+    } else {
+
+        return $AuthKey;
+    }
+}
+
+// account balance
+function balance()
+{
+
+    // $url = 'https://proxy.momoapi.mtn.co.rw/collection/v1_0/account/balance';
+    $url = 'https://mtndeveloperapi.portal.mtn.co.rw/collection/v1_0/account/balance';
+    $AuthKey = momoAuthentication();
+    $AuthKey = $AuthKey->access_token;
+    if ($AuthKey) {
+        $Token = 'Bearer ' . $AuthKey;
+        $data = json_encode([
+            'Authorization' => '',
+            'Ocp-Apim-Subscription-Key' => ''
+        ]);
+        $headers = [
+            'Content-Type:application/json',
+            'Accept:application/json',
+            'X-Target-Environment:mtnrwanda',
+            'Authorization: ' . $Token,
+            'Content-Length: ' . strlen($data),
+            'Ocp-Apim-Subscription-Key:cae4725b8bbc4e3cb5eda7959382504e'
+        ];
+
+        $serverResponse = postRequest($url, $headers, $data);
+
+        return $serverResponse;
+        // return $AuthKey;
+    } else {
+
+        return $AuthKey;
+    }
+}
+
+// generating uuiv4
+function guidv4()
+{
+    $data = openssl_random_pseudo_bytes(16);
+    assert(strlen($data) == 16);
+
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
+// ==================================== end mtn staff =============================== //

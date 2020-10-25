@@ -144,7 +144,9 @@ $(function () {
 	});
 
 	$('#create_article_form').ajaxForm({
-	    url: '{{LINK aj/articles/new-article}}?hash=' + $('.main_session').val(),
+		url: '{{LINK aj/articles/new-article}}?hash=' + $('.main_session').val(),
+		type:"POST",
+		dataType:"json",
 	    beforeSend: function() {
 	    	$('#submit-btn').attr('disabled', true);
 	    	$('#submit-btn').val("{{LANG please_wait}}");
@@ -173,7 +175,7 @@ $(function () {
 	    	if (data.status == 200) {
 	    		Snackbar.show({text: "<div>{{LANG reviewed_article}}</div>"});
 	    		setTimeout(function () {
-	    			window.location.href = data.link;
+	    			// window.location.href = data.link;
 	    		},3000)
 	    	} 
 	        else {

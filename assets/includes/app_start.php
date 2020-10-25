@@ -173,7 +173,7 @@ else if (!empty($_POST['user_id']) && !empty($_POST['s'])) {
     }  
 }
 
-elseif (!empty($_GET['cookie']) && $pt->loggedin != true) {
+else if (!empty($_GET['cookie']) && $pt->loggedin != true) {
     $session_id            = $_GET['cookie'];
     $pt->user_session      = PT_GetUserFromSessionID($session_id);
     if (!empty($pt->user_session) && is_numeric($pt->user_session)) {

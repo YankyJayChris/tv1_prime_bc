@@ -138,6 +138,72 @@ table.dataTable tbody tr td.dataTables_empty{
   text-align: center;
 }
 
+
+/* my code */
+
+.upload-product-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 4px;
+  border: 2px dashed #cecece;
+  cursor: pointer;
+  display: table;
+  margin: 0px 6px;
+}
+
+.upload-image-content {
+  font-size: 15px;
+  color: #555;
+  transition: all 0.2s ease-in-out;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+#productimage-holder {
+  width: 100%;
+  padding: 0px 8px;
+  margin: 0px 0px 0px;
+  white-space: nowrap;
+}
+
+#productimage-holder .thumb-image {
+  width: 100px;
+  height: 100px;
+  margin: 0px 5px 0px 0px;
+  display: inline-block;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.pt_design_button {
+  width: 180px;
+  display: table;
+  min-height: 180px;
+  overflow: hidden;
+  border: 2px dashed #ccc;
+  background: #fff;
+  padding: 5px;
+}
+
+.pt_design_button span {
+  vertical-align: middle;
+  display: table-cell;
+  text-align: center;
+  color: #666;
+}
+
+.pt_design_button svg.feather {
+  margin-top: 0px;
+  width: 45px;
+  height: 45px;
+  color: #cecece;
+}
+
+/* end */
+
 .theme { border: 1px solid #ededed; padding: 10px; border-radius: 3px; }
 .theme img { border-radius: 3px; margin-right: 10px; float: left; width: 65px; }
 .theme .themeVirsion { font-size: 11px; color: #555; }

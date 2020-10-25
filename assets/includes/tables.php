@@ -54,4 +54,6 @@ define('T_UPLOADED', 'uploaded_videos');
 define('T_PLAYLIST_SUB', 'playlist_subscribers');
 define('T_INVITATIONS', 'admininvitations');
 define('T_ACTIVITES', 'activities');
+define('T_APIKEY', 'apikey');
+define('T_APPPAY', 'app_payments');
 ?>

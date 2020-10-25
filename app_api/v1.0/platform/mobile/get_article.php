@@ -9,16 +9,7 @@ if (empty($_GET['article_id'])) {
             'error_text' => 'Bad Request, Invalid or missing parameter'
         )
     );
-} elseif (empty($_GET['article_id'])) {
-    $response_data    = array(
-        'api_status'  => '400',
-        'api_version' => $api_version,
-        'errors' => array(
-            'error_id' => '4',
-            'error_text' => 'id can not be empty'
-        )
-    );
-}
+} 
 else{
     $article_id = PT_Secure($_GET['article_id']);
     $post = $db->where('id', $article_id)->where('active', '1')->getOne(T_POSTS);
