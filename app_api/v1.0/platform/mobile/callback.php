@@ -1,23 +1,15 @@
 <?php
 
-$postdata = file_get_contents("php://input");
-
-if($postdata){
-    $apikey = $postdata;
+if($_POST["apiKey"]){
+    $apikey = $_POST["apiKey"];
+    $userid = ($_POST["userid"]) ?"":"";
 
     $insert_data      = array(
-        'mtn_data'    => $apikey,
+        'mm_apikey'    => $apikey,
+        'user_id'    => $userid,
 
     );
     $user_id          = $db->insert(T_APIKEY, $insert_data);
-    if (!empty($insert)) {
-        $response_data     = array(
-            'api_status'   => '200',
-            'api_version'  => $api_version,
-            'success_type' => 'callback',
-            'message'      => 'Successfully joined, paid..'
-        );
-    }
 }else{
 
     $insert_data      = array(
@@ -32,8 +24,7 @@ if($postdata){
         'errors' => array(
             'error_id' => '2',
             'error_text' => 'Bad Request, Invalid or missing parameter (apiKey)'
-        ),
-        'post_data' => $postdata
+        )
     );
 }
 

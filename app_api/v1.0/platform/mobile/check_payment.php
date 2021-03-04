@@ -20,8 +20,7 @@ if (!IS_LOGGED) {
             'error_text' => 'Not logged in'
         )
     );
-}
-else if (!empty($_POST['user_id'])) {
+} else if (!empty($_POST['user_id'])) {
     $id    = PT_Secure($_POST['user_id']);
     $db->where('id', $id);
     $user = $db->getOne(T_USERS);
@@ -32,18 +31,17 @@ else if (!empty($_POST['user_id'])) {
     $date = date('Y-m-d H:i:s');
 
     if (!empty($user)) {
-        $db->where('user_id', $id);
+        $db->where('user_id', $user->id);
         $db->where('status', "SUCCESS");
         $db->where('end_date', $date, ">=");
         $payment = $db->getOne(T_APPPAY);
 
-        if($payment){
+        if ($payment) {
 
             $diff = abs(strtotime($payment->end_date) - strtotime($date));
-            if($diff > 0){
+            if ($diff > 0) {
                 $days = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
-
-            }else{
+            } else {
                 $days = 0;
             }
             $response_data     = array(
@@ -53,19 +51,19 @@ else if (!empty($_POST['user_id'])) {
                 'data'      => $payment,
                 'days' => $days
             );
-        }else{
+        } else {
             $response_data    = array(
                 'api_status'  => '400',
                 'api_version' => $api_version,
                 'errors' => array(
                     'error_id' => '1',
-                    'error_text' => 'you have to pay'
+                    'error_text' => 'you have to pay',
+                    'error_payment' => $payment
                 )
-            ); 
+            );
         }
     }
-
-}else{
+} else {
     $response_data    = array(
         'api_status'  => '400',
         'api_version' => $api_version,

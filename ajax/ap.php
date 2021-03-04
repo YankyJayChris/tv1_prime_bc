@@ -242,9 +242,9 @@ if ($first == 'videos-status') {
                 $mydata->owner = PT_UserData($mydata->user_id);
             }
             $data["video_data"] = $mydata;
-            
+
             if ($_POST['status'] == 'approve') {
-                $file_image = "https://prime.radiotv1.rw/" . $mydata->thumbnail;
+                $file_image = $pt->config->site_url . '/' . $mydata->thumbnail;
                 firebaseNotification($mydata->title, $mydata->description, $file_image, json_encode($mydata), "video");
             }
         }
@@ -919,6 +919,369 @@ if ($first == 'save-terms') {
         $data['status'] = 200;
     }
 }
+// ======================= my code ==================== //
+if ($first == 'new-ads') {
+    $error = false;
+    if (empty($_POST['title']) || empty($_POST['description']) || empty($_POST['url']) || empty($_FILES["image"])) {
+        $error = 400;
+    } else {
+
+        if (strlen($_POST['title']) < 5) {
+            $error = 401;
+        } else if (strlen($_POST['description']) < 5) {
+            $error = 402;
+        } else if (empty($_POST['url'])) {
+            $error = 403;
+        } else if (!empty($_FILES["image"]["error"])) {
+            $error = 404;
+        } else if (!file_exists($_FILES["image"]["tmp_name"])) {
+            $error = 405;
+        } else if (file_exists($_FILES["image"]["tmp_name"])) {
+            $image = getimagesize($_FILES["image"]["tmp_name"]);
+            if (!in_array($image[2], array(
+                IMAGETYPE_GIF,
+                IMAGETYPE_JPEG,
+                IMAGETYPE_PNG,
+                IMAGETYPE_BMP
+            ))) {
+                $error = 405;
+            }
+        } else if (empty($_POST['category']) || !in_array($_POST['category'], array_keys(get_object_vars($pt->categories)))) {
+            $error = 406;
+        }
+    }
+
+    if (empty($error)) {
+
+        $file_info   = array(
+            'file' => $_FILES['image']['tmp_name'],
+            'size' => $_FILES['image']['size'],
+            'name' => $_FILES['image']['name'],
+            'type' => $_FILES['image']['type'],
+            'crop' => array(
+                'width' => 600,
+                'height' => 400
+            )
+        );
+
+        $file_upload     = PT_ShareFile($file_info);
+        $insert          = false;
+        $active          = (isset($_POST['draft'])) ? '0' : '1';
+
+        if (!empty($file_upload['filename'])) {
+            $post_image  = PT_Secure($file_upload['filename']);
+            $insert_data = array(
+                'title' => PT_Secure(PT_ShortText($_POST['title'], 150)),
+                'description' => PT_Secure(PT_ShortText($_POST['description'], 200)),
+                'category' => PT_Secure($_POST['category']),
+                'image' => $post_image,
+                'url' => htmlspecialchars($_POST['url']),
+                'time' => time(),
+                'user_id' => $pt->user->id,
+                'active' => $active,
+                'views' => 0,
+                'shared' => 0,
+            );
+
+            $insert     = $db->insert(T_APPADS, $insert_data);
+        }
+
+        $data['status'] = ($insert) ? 200 : 500;
+        $data['url']    = $pt->config->site_url . '/admin-cp/manage-ads';
+    } else {
+        $data['status'] = $error;
+    }
+}
+
+if ($first == 'new-live-link') {
+    $error = false;
+    if (empty($_POST['title']) || empty($_POST['description']) || empty($_POST['url']) || empty($_FILES["image"])) {
+        $error = 400;
+    } else {
+
+        if (strlen($_POST['title']) < 5) {
+            $error = 401;
+        } else if (strlen($_POST['description']) < 5) {
+            $error = 402;
+        } else if (empty($_POST['url'])) {
+            $error = 403;
+        } else if (!empty($_FILES["image"]["error"])) {
+            $error = 404;
+        } else if (!file_exists($_FILES["image"]["tmp_name"])) {
+            $error = 405;
+        } else if (file_exists($_FILES["image"]["tmp_name"])) {
+            $image = getimagesize($_FILES["image"]["tmp_name"]);
+            if (!in_array($image[2], array(
+                IMAGETYPE_GIF,
+                IMAGETYPE_JPEG,
+                IMAGETYPE_PNG,
+                IMAGETYPE_BMP
+            ))) {
+                $error = 405;
+            }
+        } else if (empty($_POST['category']) || !in_array($_POST['category'], array_keys(get_object_vars($pt->categories)))) {
+            $error = 406;
+        }
+    }
+
+    if (empty($error)) {
+
+        $file_info   = array(
+            'file' => $_FILES['image']['tmp_name'],
+            'size' => $_FILES['image']['size'],
+            'name' => $_FILES['image']['name'],
+            'type' => $_FILES['image']['type'],
+            'crop' => array(
+                'width' => 600,
+                'height' => 400
+            )
+        );
+
+        $file_upload     = PT_ShareFile($file_info);
+        $insert          = false;
+        $active          = (isset($_POST['draft'])) ? '0' : '1';
+
+        if (!empty($file_upload['filename'])) {
+            $post_image  = PT_Secure($file_upload['filename']);
+            $insert_data = array(
+                'title' => PT_Secure(PT_ShortText($_POST['title'], 150)),
+                'description' => PT_Secure(PT_ShortText($_POST['description'], 200)),
+                'category' => PT_Secure($_POST['category']),
+                'image' => $post_image,
+                'url' => htmlspecialchars($_POST['url']),
+                'time' => time(),
+                'user_id' => $pt->user->id,
+                'active' => $active,
+                'views' => 0,
+                'shared' => 0,
+            );
+
+            $insert     = $db->insert(T_LIVE_LINKS, $insert_data);
+        }
+
+        $data['status'] = ($insert) ? 200 : 500;
+        $data['url']    = $pt->config->site_url . '/admin-cp/manage-live';
+    } else {
+        $data['status'] = $error;
+    }
+}
+
+if ($first == 'update-ad') {
+    $error = false;
+    if (empty($_POST['title']) || empty($_POST['description']) || empty($_POST['url'])) {
+        $error = 400;
+    } else {
+
+        if (strlen($_POST['title']) < 5) {
+            $error = 401;
+        } else if (strlen($_POST['description']) < 5) {
+            $error = 402;
+        } else if (strlen($_POST['url']) < 5) {
+            $error = 402;
+        }else if (!empty($_FILES["image"])) {
+
+            if (!empty($_FILES["image"]["error"])) {
+                $error = 404;
+            } else if (!file_exists($_FILES["image"]["tmp_name"])) {
+                $error = 405;
+            } else if (file_exists($_FILES["image"]["tmp_name"])) {
+                $image = getimagesize($_FILES["image"]["tmp_name"]);
+                if (!in_array($image[2], array(
+                    IMAGETYPE_GIF,
+                    IMAGETYPE_JPEG,
+                    IMAGETYPE_PNG,
+                    IMAGETYPE_BMP
+                ))) {
+                    $error = 405;
+                }
+            }
+        } else if (empty($_POST['category']) || !in_array($_POST['category'], array_keys(get_object_vars($pt->categories)))) {
+            $error = 406;
+        } else if (empty($_POST['id']) || !is_numeric($_POST['id'])) {
+            $error = 500;
+        }
+    }
+
+    if (empty($error)) {
+        $insert      = false;
+        $active      = (isset($_POST['draft'])) ? '0' : '1';
+        $active      = (!empty($_POST['status']) && $_POST['status'] == '1') ? '1' : '0';
+        $id          = PT_Secure($_POST['id']);
+
+        $update_data = array(
+            'title' => PT_Secure(PT_ShortText(
+                $_POST['title'],
+                150
+            )),
+            'description' => PT_Secure(PT_ShortText($_POST['description'], 200)),
+            'category' => PT_Secure($_POST['category']),
+            'category' => PT_Secure($_POST['url']),
+            'active' => $active,
+            'shared' => 0,
+            "updated" => time(),
+        );
+
+        if (!empty($_FILES["image"])) {
+            $file_info   = array(
+                'file' => $_FILES['image']['tmp_name'],
+                'size' => $_FILES['image']['size'],
+                'name' => $_FILES['image']['name'],
+                'type' => $_FILES['image']['type'],
+                'crop' => array(
+                    'width' => 720,
+                    'height' => 300
+                )
+            );
+            $file_upload     = PT_ShareFile($file_info);
+            if (!empty($file_upload['filename'])) {
+                $update_data['image'] = PT_Secure($file_upload['filename']);
+            } else {
+                $error = true;
+            }
+        }
+
+        $insert         = $db->where('id', $id)->update(T_APPADS, $update_data);
+        $ad = $db->where('id', PT_Secure($_POST['id']))->get(T_APPADS);
+
+        $data['status'] = ($insert && empty($error)) ? 200 : 500;
+    } else {
+        $data['status'] = $error;
+    }
+}
+
+if ($first == 'update-live') {
+    $error = false;
+    if (empty($_POST['title']) || empty($_POST['description']) || empty($_POST['url'])) {
+        $error = 400;
+    } else {
+
+        if (strlen($_POST['title']) < 5) {
+            $error = 401;
+        } else if (strlen($_POST['description']) < 5) {
+            $error = 402;
+        } else if (strlen($_POST['url']) < 5) {
+            $error = 402;
+        }else if (!empty($_FILES["image"])) {
+
+            if (!empty($_FILES["image"]["error"])) {
+                $error = 404;
+            } else if (!file_exists($_FILES["image"]["tmp_name"])) {
+                $error = 405;
+            } else if (file_exists($_FILES["image"]["tmp_name"])) {
+                $image = getimagesize($_FILES["image"]["tmp_name"]);
+                if (!in_array($image[2], array(
+                    IMAGETYPE_GIF,
+                    IMAGETYPE_JPEG,
+                    IMAGETYPE_PNG,
+                    IMAGETYPE_BMP
+                ))) {
+                    $error = 405;
+                }
+            }
+        } else if (empty($_POST['category']) || !in_array($_POST['category'], array_keys(get_object_vars($pt->categories)))) {
+            $error = 406;
+        } else if (empty($_POST['id']) || !is_numeric($_POST['id'])) {
+            $error = 500;
+        }
+    }
+
+    if (empty($error)) {
+        $insert      = false;
+        $active      = (isset($_POST['draft'])) ? '0' : '1';
+        $active      = (!empty($_POST['status']) && $_POST['status'] == '1') ? '1' : '0';
+        $id          = PT_Secure($_POST['id']);
+
+        $update_data = array(
+            'title' => PT_Secure(PT_ShortText(
+                $_POST['title'],
+                150
+            )),
+            'description' => PT_Secure(PT_ShortText($_POST['description'], 200)),
+            'category' => PT_Secure($_POST['category']),
+            'url' => PT_Secure($_POST['url']),
+            'active' => $active,
+            'shared' => 0,
+            "updated" => time(),
+        );
+
+        if (!empty($_FILES["image"])) {
+            $file_info   = array(
+                'file' => $_FILES['image']['tmp_name'],
+                'size' => $_FILES['image']['size'],
+                'name' => $_FILES['image']['name'],
+                'type' => $_FILES['image']['type'],
+                'crop' => array(
+                    'width' => 720,
+                    'height' => 300
+                )
+            );
+            $file_upload     = PT_ShareFile($file_info);
+            if (!empty($file_upload['filename'])) {
+                $update_data['image'] = PT_Secure($file_upload['filename']);
+            } else {
+                $error = true;
+            }
+        }
+
+        $insert         = $db->where('id', $id)->update(T_LIVE_LINKS, $update_data);
+        $live = $db->where('id', PT_Secure($_POST['id']))->get(T_LIVE_LINKS);
+
+        $data['status'] = ($insert && empty($error)) ? 200 : 500;
+    } else {
+        $data['status'] = $error;
+    }
+}
+
+
+if ($first == 'delete-ad') {
+    $error = false;
+    if (!empty($_POST['id'])) {
+        $ad = $db->where('id', PT_Secure($_POST['id']))->getOne(T_APPADS);
+        if (!empty($ad)) {
+            $s3      = ($pt->config->s3_upload == 'on' || $pt->config->ftp_upload = 'on' || $pt->config->spaces == 'on') ? true : false;
+            if (file_exists($ad->image)) {
+                unlink($ad->image);
+            } else if ($s3 === true) {
+                PT_DeleteFromToS3($ad->image);
+            }
+
+            $delete  = $db->where('id', PT_Secure($_POST['id']))->delete(T_APPADS);
+
+
+            if ($delete) {
+                $data = array('status' => 200);
+            }
+        } else {
+            $data['status'] = $error;
+        }
+    }
+}
+
+if ($first == 'delete-live') {
+    $error = false;
+    if (!empty($_POST['id'])) {
+        $ad = $db->where('id', PT_Secure($_POST['id']))->getOne(T_LIVE_LINKS);
+        if (!empty($ad)) {
+            $s3      = ($pt->config->s3_upload == 'on' || $pt->config->ftp_upload = 'on' || $pt->config->spaces == 'on') ? true : false;
+            if (file_exists($ad->image)) {
+                unlink($ad->image);
+            } else if ($s3 === true) {
+                PT_DeleteFromToS3($ad->image);
+            }
+
+            $delete  = $db->where('id', PT_Secure($_POST['id']))->delete(T_LIVE_LINKS);
+
+
+            if ($delete) {
+                $data = array('status' => 200);
+            }
+        } else {
+            $data['status'] = $error;
+        }
+    }
+}
+
+// ======================= end my code ==================== //
 
 if ($first == 'new-article') {
     $error = false;
@@ -1067,8 +1430,8 @@ if ($first == 'update-article') {
         }
 
         $insert         = $db->where('id', $id)->update(T_POSTS, $update_data);
-        $article = $db->where('id',PT_Secure($_POST['id']))->get(T_POSTS);
-        $imageUlr = "https://prime.radiotv1.rw/".$article->image;
+        $article = $db->where('id', PT_Secure($_POST['id']))->get(T_POSTS);
+        $imageUlr = $pt->config->site_url .'/'. $article->image;
         if ($active == '1') {
             $custom_data = json_encode($update_data);
             firebaseNotification($update_data['title'], $update_data["description"], $imageUlr, "$id", "article");
@@ -2864,6 +3227,192 @@ if ($first == 'auto_delete') {
         $data = array('status' => 400);
     }
 }
+
+
+//*************** my codes for app ads**************/
+
+
+// if ($first == 'new-ad') {
+//     $error = false;
+//     $var_dump($_POST['title']);
+//     if (empty($_POST['title']) || empty($_POST['description'])|| empty($_POST['url']) || empty($_FILES["image"])) {
+//         $error = 400;
+//     } else {
+
+//         if (strlen($_POST['title']) < 5) {
+//             $error = 401;
+//         } else if (strlen($_POST['description']) < 15) {
+//             $error = 402;
+//         } else if (strlen($_POST['url']) < 15) {
+//             $error = 402;
+
+//         } else if (!empty($_FILES["image"]["error"])) {
+//             $error = 404;
+//         } else if (!file_exists($_FILES["image"]["tmp_name"])) {
+//             $error = 405;
+//         } else if (file_exists($_FILES["image"]["tmp_name"])) {
+//             $image = getimagesize($_FILES["image"]["tmp_name"]);
+//             if (!in_array($image[2], array(
+//                 IMAGETYPE_GIF,
+//                 IMAGETYPE_JPEG,
+//                 IMAGETYPE_PNG,
+//                 IMAGETYPE_BMP
+//             ))) {
+//                 $error = 405;
+//             }
+//         } else if (empty($_POST['category']) || !in_array($_POST['category'], array_keys(get_object_vars($pt->categories)))) {
+//             $error = 406;
+//         }
+//     }
+
+//     if (empty($error)) {
+
+//         $file_info   = array(
+//             'file' => $_FILES['image']['tmp_name'],
+//             'size' => $_FILES['image']['size'],
+//             'name' => $_FILES['image']['name'],
+//             'type' => $_FILES['image']['type'],
+//             'crop' => array(
+//                 'width' => 720,
+//                 'height' => 300
+//             )
+//         );
+
+//         $file_upload     = PT_ShareFile($file_info);
+//         $insert          = false;
+//         $active          = (isset($_POST['draft'])) ? '0' : '1';
+
+//         if (!empty($file_upload['filename'])) {
+//             $post_image  = PT_Secure($file_upload['filename']);
+//             $insert_data = array(
+//                 'title' => PT_Secure(PT_ShortText($_POST['title'], 150)),
+//                 'description' => PT_Secure(PT_ShortText($_POST['description'], 200)),
+//                 'category' => PT_Secure($_POST['category']),
+//                 'image' => $post_image,
+//                 'time' => time(),
+//                 'user_id' => $pt->user->id,
+//                 'active' => $active,
+//                 'views' => 0,
+//                 'shared' => 0,
+//             );
+
+//             $insert     = $db->insert(T_APPADS, $insert_data);
+//         }
+
+//         $data['status'] = ($insert) ? 200 : 500;
+//     } else {
+//         $data['status'] = $error;
+//     }
+// }
+
+
+if ($first == 'update-ad') {
+    $error = false;
+    if (empty($_POST['title']) || empty($_POST['description'])) {
+        $error = 400;
+    } else {
+
+        if (strlen($_POST['title']) < 5) {
+            $error = 401;
+        } else if (strlen($_POST['description']) < 15) {
+            $error = 402;
+        } else if (!empty($_FILES["image"])) {
+
+            if (!empty($_FILES["image"]["error"])) {
+                $error = 404;
+            } else if (!file_exists($_FILES["image"]["tmp_name"])) {
+                $error = 405;
+            } else if (file_exists($_FILES["image"]["tmp_name"])) {
+                $image = getimagesize($_FILES["image"]["tmp_name"]);
+                if (!in_array($image[2], array(
+                    IMAGETYPE_GIF,
+                    IMAGETYPE_JPEG,
+                    IMAGETYPE_PNG,
+                    IMAGETYPE_BMP
+                ))) {
+                    $error = 405;
+                }
+            }
+        } else if (empty($_POST['category']) || !in_array($_POST['category'], array_keys(get_object_vars($pt->categories)))) {
+            $error = 406;
+        } else if (empty($_POST['id']) || !is_numeric($_POST['id'])) {
+            $error = 500;
+        }
+    }
+
+    if (empty($error)) {
+        $insert      = false;
+        $active      = (isset($_POST['draft'])) ? '0' : '1';
+        $active      = (!empty($_POST['status']) && $_POST['status'] == '1') ? '1' : '0';
+        $id          = PT_Secure($_POST['id']);
+
+        $update_data = array(
+            'title' => PT_Secure(PT_ShortText(
+                $_POST['title'],
+                150
+            )),
+            'description' => PT_Secure(PT_ShortText($_POST['description'], 200)),
+            'category' => PT_Secure($_POST['category']),
+            'active' => $active,
+            'shared' => 0,
+            "updated" => time(),
+        );
+
+        if (!empty($_FILES["image"])) {
+            $file_info   = array(
+                'file' => $_FILES['image']['tmp_name'],
+                'size' => $_FILES['image']['size'],
+                'name' => $_FILES['image']['name'],
+                'type' => $_FILES['image']['type'],
+                'crop' => array(
+                    'width' => 720,
+                    'height' => 300
+                )
+            );
+            $file_upload     = PT_ShareFile($file_info);
+            if (!empty($file_upload['filename'])) {
+                $update_data['image'] = PT_Secure($file_upload['filename']);
+            } else {
+                $error = true;
+            }
+        }
+
+        $insert         = $db->where('id', $id)->update(T_APPADS, $update_data);
+        $ad = $db->where('id', PT_Secure($_POST['id']))->get(T_APPADS);
+
+        $data['status'] = ($insert && empty($error)) ? 200 : 500;
+    } else {
+        $data['status'] = $error;
+    }
+}
+
+
+if ($first == 'delete-ad') {
+    $error = false;
+    if (!empty($_POST['id'])) {
+        $ad = $db->where('id', PT_Secure($_POST['id']))->getOne(T_APPADS);
+        if (!empty($ad)) {
+            $s3      = ($pt->config->s3_upload == 'on' || $pt->config->ftp_upload = 'on' || $pt->config->spaces == 'on') ? true : false;
+            if (file_exists($ad->image)) {
+                unlink($ad->image);
+            } else if ($s3 === true) {
+                PT_DeleteFromToS3($ad->image);
+            }
+
+            $delete  = $db->where('id', PT_Secure($_POST['id']))->delete(T_APPADS);
+
+
+            if ($delete) {
+                $data = array('status' => 200);
+            }
+        } else {
+            $data['status'] = $error;
+        }
+    }
+}
+
+
+//*************** End of my codes for app ads**************/
 
 
 

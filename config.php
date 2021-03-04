@@ -15,7 +15,7 @@ $sql_db_user = "root";
 // MySQL Database Password
 $sql_db_pass = "";
 // MySQL Database Name
-$sql_db_name = "tv1video";
+$sql_db_name = "tv1_prime";
 
 // Site URL
 $site_url = "http://localhost/tv1video"; // e.g (http://example.com)

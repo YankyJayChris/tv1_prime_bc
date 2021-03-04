@@ -56,4 +56,6 @@ define('T_INVITATIONS', 'admininvitations');
 define('T_ACTIVITES', 'activities');
 define('T_APIKEY', 'apikey');
 define('T_APPPAY', 'app_payments');
+define('T_APPADS', 'app_ads');
+define('T_LIVE_LINKS', 'live_links');
 ?>

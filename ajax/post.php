@@ -85,7 +85,6 @@ if ($first == 'edit') {
 	                'text' => PT_Secure($_POST['text'])
 	            );
 
-
 		    	if (!empty($_FILES['image'])) {
 		    		$file_info   = array(
 			            'file' => $_FILES['image']['tmp_name'],
@@ -103,9 +102,7 @@ if ($first == 'edit') {
 
 			        if (file_exists($post->image)) {
 			            unlink($post->image);
-			        }
-			        
-			        else if ($s3 === true) {
+			        }else if ($s3 === true) {
 			            PT_DeleteFromToS3($post->image);
 			        }
 		    	}

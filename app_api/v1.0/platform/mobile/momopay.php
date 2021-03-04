@@ -26,73 +26,95 @@ if (!IS_LOGGED) {
     $diff = abs(strtotime($end_date) - strtotime(date('Y-m-d H:i:s')));
     $days = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
 
-
-    if (!empty($_POST['ref_id']) && !empty($_POST['user_id'])) {
+     if (!empty($_POST['ref_id']) && !empty($_POST['user_id'])) {
         $refID = PT_Secure($_POST['ref_id']);
         $user_id = PT_Secure($_POST['user_id']);
 
-        $data = RequestPayStatus($refID);
-        $mydata = json_decode(json_encode($data), true);
-        $end_date = (($mydata['payerMessage'] == "year") ? $plus_year : $plus_month);
-        $insert_data      = array(
-            'user_id'    => $user_id,
-            'payment_id'    => $refID,
-            'amount'    => $mydata['amount'],
-            'currency'    => $mydata['currency'],
-            'provider'    => "MTN",
-            'end_date'    => $end_date,
-            'status'    => $mydata['status'],
-            'period'    => $mydata['payerMessage'],
-            'phone_number'    => $mydata['payer']['partyId'],
-        );
+        $db->where('user_id', $user_id);
+        $db->where('status', "SUCCESS");
+        $db->where('end_date', $date, ">=");
+        $payment = $db->getOne(T_APPPAY);
 
-        // if ($mydata['status'] == "SUCCESS") {
-        if ($mydata['status'] == "FAILED") {
-            $db->where('payment_id', $refID);
-            $exist_payment = $db->getOne(T_APPPAY);
-            $payment_id;
-            $payment;
-            $newdays;
-            if ($exist_payment) {
-                $db->where('payment_id', $refID);
-                $payment_id  = $db->update(T_APPPAY, ['status' => $mydata['status'],]);
-                $db->where('payment_id', $refID);
-                $payment = $db->getOne(T_APPPAY);
-
-                $diff = abs(strtotime($payment->end_date) - strtotime(date('Y-m-d H:i:s')));
-                if ($diff > 0) {
-                    $newdays = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
-                } else {
-                    $newdays = 0;
-                }
+        if ($payment) {
+            $diff = abs(strtotime($payment->end_date) - strtotime($date));
+            if ($diff > 0) {
+                $days = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
             } else {
-                $payment_id  = $db->insert(T_APPPAY, $insert_data);
-                $db->where('id', $payment_id);
-                $payment = $db->getOne(T_APPPAY);
-
-                $diff = abs(strtotime($payment->end_date) - strtotime(date('Y-m-d H:i:s')));
-                if ($diff > 0) {
-                    $newdays = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
-                } else {
-                    $newdays = 0;
-                }
+                $days = 0;
             }
-
             $response_data     = array(
                 'api_status'   => '200',
                 'api_version'  => $api_version,
-                'message' => 'Payment completed successfully',
+                'message' => 'You still have valide payment',
                 'data'      => $payment,
-                'days' => $newdays,
+                'days' => $days
             );
-        } else {
-            $response_data    = array(
-                'api_status'         => '424',
-                'api_version'        => $api_version,
-                'ref_id' => $refID,
-                'message' => 'Payment request failed, please try again',
+        } else{
+            $data = RequestPayStatus($refID);
+            $mydata = json_decode(json_encode($data), true);
+            $end_date = (($mydata['payerMessage'] == "year") ? $plus_year : $plus_month);
+            $insert_data      = array(
+                'user_id'    => $user_id,
+                'payment_id'    => $refID,
+                'amount'    => $mydata['amount'],
+                'currency'    => $mydata['currency'],
+                'provider'    => "MTN",
+                'end_date'    => $end_date,
+                'status'    => $mydata['status'],
+                'period'    => $mydata['payerMessage'],
+                'phone_number'    => $mydata['payer']['partyId'],
             );
+
+            // if ($mydata['status'] == "SUCCESS") {
+            if ($mydata['status'] == "FAILED" || $mydata['status'] == "PENDING") {
+                $db->where('payment_id', $refID);
+                $exist_payment = $db->getOne(T_APPPAY);
+                $payment_id;
+                $payment;
+                $newdays;
+                if ($exist_payment) {
+                    $db->where('payment_id', $refID);
+                    $payment_id  = $db->update(T_APPPAY, ['status' => $mydata['status'],]);
+                    $db->where('payment_id', $refID);
+                    $payment = $db->getOne(T_APPPAY);
+
+                    $diff = abs(strtotime($payment->end_date) - strtotime(date('Y-m-d H:i:s')));
+                    if ($diff > 0) {
+                        $newdays = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
+                    } else {
+                        $newdays = 0;
+                    }
+                } else {
+                    $payment_id  = $db->insert(T_APPPAY, $insert_data);
+                    $db->where('id', $payment_id);
+                    $payment = $db->getOne(T_APPPAY);
+
+                    $diff = abs(strtotime($payment->end_date) - strtotime(date('Y-m-d H:i:s')));
+                    if ($diff > 0) {
+                        $newdays = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
+                    } else {
+                        $newdays = 0;
+                    }
+                }
+
+                $response_data     = array(
+                    'api_status'   => '200',
+                    'api_version'  => $api_version,
+                    'message' => 'Payment completed successfully',
+                    'data'      => $payment,
+                    'days' => $newdays,
+                );
+            } else {
+                $response_data    = array(
+                    'api_status'         => '424',
+                    'api_version'        => $api_version,
+                    'ref_id' => $refID,
+                    'message' => 'Payment request failed, please try again',
+                );
+            }
         }
+
+        
     } else if (empty($_POST['user_id']) && empty($_POST['phone_number']) && empty($_POST['period'])) {
         $response_data       = array(
             'api_status'     => '400',

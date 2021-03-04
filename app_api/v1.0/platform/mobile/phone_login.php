@@ -9,8 +9,6 @@
 // | Copyright (c) 2017 PlayTube. All rights reserved.
 // +------------------------------------------------------------------------+
 
-
-
 if (empty($_POST['phone_number']) || empty($_POST['password'])) {
     $response_data       = array(
         'api_status'     => '400',

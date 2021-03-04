@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $page = 'dashboard';
 if (!empty($_GET['page'])) {
@@ -8,34 +8,40 @@ if (!empty($_GET['page'])) {
 
 $page_loaded = '';
 $pages = array(
-    'dashboard', 
-    'general-settings', 
-    'site-settings', 
-    'email-settings', 
+    'dashboard',
+    'general-settings',
+    'site-settings',
+    'email-settings',
     'social-login',
     's3',
     'prosys-settings',
     'manage-payments',
-    'payment-requests', 
-    'manage-users', 
-    'manage-videos', 
-    'import-from-youtube', 
+    'payment-requests',
+    'manage-users',
+    'manage-videos',
+    'import-from-youtube',
     'import-from-dailymotion',
-    'import-from-twitch', 
-    'manage-video-ads', 
-    'create-video-ad', 
-    'edit-video-ad', 
-    'manage-website-ads', 
+    'import-from-twitch',
+    'manage-video-ads',
+    'create-video-ad',
+    'edit-video-ad',
+    'manage-website-ads',
     'manage-user-ads',
-    'manage-themes', 
-    'change-site-desgin', 
-    'create-new-sitemap', 
-    'manage-pages', 
+    'manage-themes',
+    'change-site-desgin',
+    'create-new-sitemap',
+    'manage-pages',
     'changelog',
     'backup',
     'create-article',
+    'create-ad',
+    'create-live',
     'edit-article',
+    'edit-ad',
+    'edit-live',
     'manage-articles',
+    'manage-ads',
+    'manage-lives',
     'manage-profile-fields',
     'add-new-profile-field',
     'edit-profile-field',
@@ -73,7 +79,7 @@ $pages = array(
 
 if (in_array($page, $pages)) {
     $page_loaded = PT_LoadAdminPage("$page/content");
-} 
+}
 
 if (empty($page_loaded)) {
     header("Location: " . PT_Link('admincp'));
@@ -187,7 +193,7 @@ if ($page == 'dashboard') {
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    
+
                     <li <?php echo ($page == 'general-settings' || $page == 'site-settings' || $page == 'payment-settings' || $page == 'email-settings' || $page == 'social-login' || $page == 's3' || $page == 'manage-currencies') ? 'class="active"' : ''; ?>>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">settings</i>
@@ -212,10 +218,10 @@ if ($page == 'dashboard') {
 
                             <li <?php echo ($page == 'payment-settings') ? 'class="active"' : ''; ?>>
                                 <a href="<?php echo PT_LoadAdminLinkSettings('payment-settings'); ?>">Payment Settings</a>
-                            </li> 
+                            </li>
                             <li <?php echo ($page == 'manage-currencies') ? 'class="active"' : ''; ?>>
                                 <a href="<?php echo PT_LoadAdminLinkSettings('manage-currencies'); ?>">Manage Currencies</a>
-                            </li>   
+                            </li>
                         </ul>
                     </li>
                     <li <?php echo ($page == 'manage-languages' || $page == 'add-language' || $page == 'edit-lang') ? 'class="active"' : ''; ?>>
@@ -251,7 +257,7 @@ if ($page == 'dashboard') {
                                 <a href="<?php echo PT_LoadAdminLinkSettings('monetization-requests'); ?>">Manage Monetization Requests</a>
                             </li>
                         </ul>
-                        
+
                     </li>
 
                     <li <?php echo ($page == 'manage-videos' || $page == 'import-from-youtube' || $page == 'import-from-dailymotion' || $page == 'sold_videos_analytics' || $page == 'import-from-twitch') ? 'class="active"' : ''; ?>>
@@ -285,7 +291,7 @@ if ($page == 'dashboard') {
                             </li> -->
                         </ul>
                     </li>
-                    
+
                     <li <?php echo ($page == 'manage-movies' || $page == 'manage-movies-category') ? 'class="active"' : ''; ?>>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">video_library</i>
@@ -311,6 +317,34 @@ if ($page == 'dashboard') {
                             </li>
                             <li <?php echo ($page == 'manage-articles') ? 'class="active"' : ''; ?>>
                                 <a href="<?php echo PT_LoadAdminLinkSettings('manage-articles'); ?>">Manage Articles</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li <?php echo ($page == 'manage-ads' || $page == 'create-ad' || $page == 'edit-ad') ? 'class="active"' : ''; ?>>
+                        <a href="javascript:void(0);" class="menu-toggle">
+                            <i class="material-icons">library_books</i>
+                            <span>Ads</span>
+                        </a>
+                        <ul class="ml-menu">
+                            <li <?php echo ($page == 'create-ad') ? 'class="active"' : ''; ?>>
+                                <a href="<?php echo PT_LoadAdminLinkSettings('create-ad'); ?>">Add New Ad</a>
+                            </li>
+                            <li <?php echo ($page == 'manage-ads') ? 'class="active"' : ''; ?>>
+                                <a href="<?php echo PT_LoadAdminLinkSettings('manage-ads'); ?>">Manage Ads</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li <?php echo ($page == 'manage-lives' || $page == 'create-live' || $page == 'edit-live') ? 'class="active"' : ''; ?>>
+                        <a href="javascript:void(0);" class="menu-toggle">
+                            <i class="material-icons">library_books</i>
+                            <span>live links</span>
+                        </a>
+                        <ul class="ml-menu">
+                            <li <?php echo ($page == 'create-live') ? 'class="active"' : ''; ?>>
+                                <a href="<?php echo PT_LoadAdminLinkSettings('create-live'); ?>">Add New live link</a>
+                            </li>
+                            <li <?php echo ($page == 'manage-lives') ? 'class="active"' : ''; ?>>
+                                <a href="<?php echo PT_LoadAdminLinkSettings('manage-lives'); ?>">Manage live link</a>
                             </li>
                         </ul>
                     </li>
@@ -378,7 +412,7 @@ if ($page == 'dashboard') {
                             <li <?php echo ($page == 'manage-payments') ? 'class="active"' : ''; ?>>
                                 <a href="<?php echo PT_LoadAdminLinkSettings('manage-payments'); ?>">Recent Payments</a>
                             </li>
-                            
+
                         </ul>
                     </li>
                     <li <?php echo ($page == 'manage-themes' || $page == 'change-site-desgin' || $page == 'custom-design') ? 'class="active"' : ''; ?>>
@@ -496,7 +530,7 @@ if ($page == 'dashboard') {
                             <span>Changelogs</span>
                         </a>
                     </li>
-                     <li >
+                    <li>
                         <a href="http://docs.playtubescript.com" target="_blank">
                             <i class="material-icons">more_vert</i>
                             <span>FAQs & Docs</span>
@@ -508,7 +542,7 @@ if ($page == 'dashboard') {
             <!-- Footer -->
             <div class="legal">
                 <div class="copyright">
-                    Copyright &copy; <?php  echo date('Y') ?> <a href="javascript:void(0);"><?php echo $pt->config->name; ?></a>.
+                    Copyright &copy; <?php echo date('Y') ?> <a href="javascript:void(0);"><?php echo $pt->config->name; ?></a>.
                 </div>
                 <div class="version">
                     <b>Version: </b> <?php echo $pt->config->script_version ?>
@@ -522,7 +556,7 @@ if ($page == 'dashboard') {
     <section class="content">
         <?php echo $page_loaded; ?>
     </section>
-    
+
     <!-- Bootstrap Core Js -->
     <script src="<?php echo PT_LoadAdminLink('plugins/bootstrap/js/bootstrap.js'); ?>"></script>
 
@@ -565,7 +599,7 @@ if ($page == 'dashboard') {
     <!-- Jquery Alert Plugin Js-->
     <script src="<?php echo PT_LoadAdminLink('plugins/sweetalert/sweetalert.min.js'); ?>"></script>
 
-     <!-- Jquery Magnific Pop-up Plugin Js-->
+    <!-- Jquery Magnific Pop-up Plugin Js-->
     <script src="<?php echo PT_LoadAdminLink('plugins/m-popup/jquery.magnific-popup.min.js'); ?>"></script>
 
 
@@ -579,58 +613,59 @@ if ($page == 'dashboard') {
 </body>
 
 </html>
-<style> 
-.sidebar .user-info {
-    background: #602e98;
-}
-[type="checkbox"]:checked + label:before {
-    border-right: 2px solid #333;
-}
+<style>
+    .sidebar .user-info {
+        background: #602e98;
+    }
+
+    [type="checkbox"]:checked+label:before {
+        border-right: 2px solid #333;
+    }
 </style>
 <script>
-<?php echo PT_LoadAdminPage('js/main'); ?>
+    <?php echo PT_LoadAdminPage('js/main'); ?>
 
-function searchInFiles(keyword) {
-    if (keyword.length > 2) {
-        $.post('<?php echo $pt->config->site_url; ?>/aj/ap/search_in_pages', {keyword: keyword}, function(data, textStatus, xhr) {
-            if (data.html != '') {
-                $('#search_for_bar').html(data.html)
-            }
-            else{
-                $('#search_for_bar').html('')
-            }
-        });
-    }
-    else{
-        $('#search_for_bar').html('')
-    }
-}
-$(window).load(function() {
-    jQuery.fn.highlight = function (str, className) {
-        if (str != '') {
-            var aTags = document.getElementsByTagName("h2");
-            var bTags = document.getElementsByTagName("label");
-            var searchText = str.toLowerCase();
-
-            if (aTags.length > 0) {
-                for (var i = 0; i < aTags.length; i++) {
-                    var tag_text = aTags[i].textContent.toLowerCase();
-                    if (tag_text.indexOf(searchText) != -1) {
-                        $(aTags[i]).addClass(className)
-                    }
+    function searchInFiles(keyword) {
+        if (keyword.length > 2) {
+            $.post('<?php echo $pt->config->site_url; ?>/aj/ap/search_in_pages', {
+                keyword: keyword
+            }, function(data, textStatus, xhr) {
+                if (data.html != '') {
+                    $('#search_for_bar').html(data.html)
+                } else {
+                    $('#search_for_bar').html('')
                 }
-            }
-
-            if (bTags.length > 0) {
-                for (var i = 0; i < bTags.length; i++) {
-                    var tag_text = bTags[i].textContent.toLowerCase();
-                    if (tag_text.indexOf(searchText) != -1) {
-                        $(bTags[i]).addClass(className)
-                    }
-                }
-            }
+            });
+        } else {
+            $('#search_for_bar').html('')
         }
-    };
-    jQuery.fn.highlight("<?php echo (!empty($_GET['highlight']) ? $_GET['highlight'] : '') ?>",'highlight_text');
-});
+    }
+    $(window).load(function() {
+        jQuery.fn.highlight = function(str, className) {
+            if (str != '') {
+                var aTags = document.getElementsByTagName("h2");
+                var bTags = document.getElementsByTagName("label");
+                var searchText = str.toLowerCase();
+
+                if (aTags.length > 0) {
+                    for (var i = 0; i < aTags.length; i++) {
+                        var tag_text = aTags[i].textContent.toLowerCase();
+                        if (tag_text.indexOf(searchText) != -1) {
+                            $(aTags[i]).addClass(className)
+                        }
+                    }
+                }
+
+                if (bTags.length > 0) {
+                    for (var i = 0; i < bTags.length; i++) {
+                        var tag_text = bTags[i].textContent.toLowerCase();
+                        if (tag_text.indexOf(searchText) != -1) {
+                            $(bTags[i]).addClass(className)
+                        }
+                    }
+                }
+            }
+        };
+        jQuery.fn.highlight("<?php echo (!empty($_GET['highlight']) ? $_GET['highlight'] : '') ?>", 'highlight_text');
+    });
 </script>
