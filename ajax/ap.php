@@ -1161,7 +1161,7 @@ if ($first == 'update-live') {
             $error = 402;
         } else if (strlen($_POST['url']) < 5) {
             $error = 402;
-        }else if (!empty($_FILES["image"])) {
+        } else if (!empty($_FILES["image"])) {
 
             if (!empty($_FILES["image"]["error"])) {
                 $error = 404;
@@ -1198,7 +1198,7 @@ if ($first == 'update-live') {
             )),
             'description' => PT_Secure(PT_ShortText($_POST['description'], 200)),
             'category' => PT_Secure($_POST['category']),
-            'url' => PT_Secure($_POST['url']),
+            'category' => PT_Secure($_POST['url']),
             'active' => $active,
             'shared' => 0,
             "updated" => time(),
@@ -1224,7 +1224,7 @@ if ($first == 'update-live') {
         }
 
         $insert         = $db->where('id', $id)->update(T_LIVE_LINKS, $update_data);
-        $live = $db->where('id', PT_Secure($_POST['id']))->get(T_LIVE_LINKS);
+        $ad = $db->where('id', PT_Secure($_POST['id']))->get(T_LIVE_LINKS);
 
         $data['status'] = ($insert && empty($error)) ? 200 : 500;
     } else {
