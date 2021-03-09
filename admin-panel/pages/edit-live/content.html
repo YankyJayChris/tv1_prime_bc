@@ -6,7 +6,7 @@ if (empty($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 
 $id       = PT_Secure($_GET['id']);
-$article  = $db->where('id',$id)->getOne(T_APPADS);
+$article  = $db->where('id',$id)->getOne(T_LIVE_LINKS);
 
 if (empty($article)) {
     header('Location: ' . PT_Link('404'));
@@ -27,7 +27,7 @@ $article->image = PT_GetMedia($article->image);
         <div class="col-lg-12 col-md-12">
             <div class="card">
                 <div class="header">
-                    <h2>Edit ad</h2>
+                    <h2>Edit live link</h2>
                 </div>
                 <div class="body">
                     <div class="create-article-alert">
@@ -137,7 +137,7 @@ $article->image = PT_GetMedia($article->image);
         });
 
         form.ajaxForm({
-            url: "{{LINK aj/ap/update-ad}}",
+            url: "{{LINK aj/ap/update-live}}",
             type:"POST",
             dataType:"json",
             data:{},

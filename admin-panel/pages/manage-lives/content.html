@@ -83,8 +83,8 @@ if (($page > $db->totalPages) && !empty($_GET['page-id'])) {
 	                                		'LIVE_LINK' => PT_ShortText($article->url,50), 
 	                                		'CATEGORY' =>  !empty($category) ? $pt->categories->{$category} :'', 
 	                                		'DATE' => date('F-d-Y',$article->time), 
-	                                		'EDIT_LINK' => PT_LoadAdminLinkSettings("edit-ad?id=$art_id"), 
-                                            'URL' => PT_Link("articles/read/$art_id"), 
+	                                		'EDIT_LINK' => PT_LoadAdminLinkSettings("edit-live?id=$art_id"), 
+                                            'URL' => PT_LoadAdminLinkSettings("edit-live?id=$art_id"), 
 	                                		'STATUS' => $status
                                 		));
                                 }
