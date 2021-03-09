@@ -323,18 +323,18 @@ if ($page == 'dashboard') {
                     <li <?php echo ($page == 'manage-ads' || $page == 'create-ad' || $page == 'edit-ad') ? 'class="active"' : ''; ?>>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">library_books</i>
-                            <span>Ads</span>
+                            <span>live links</span>
                         </a>
                         <ul class="ml-menu">
                             <li <?php echo ($page == 'create-ad') ? 'class="active"' : ''; ?>>
-                                <a href="<?php echo PT_LoadAdminLinkSettings('create-ad'); ?>">Add New Ad</a>
+                                <a href="<?php echo PT_LoadAdminLinkSettings('create-ad'); ?>">Add New live links</a>
                             </li>
                             <li <?php echo ($page == 'manage-ads') ? 'class="active"' : ''; ?>>
-                                <a href="<?php echo PT_LoadAdminLinkSettings('manage-ads'); ?>">Manage Ads</a>
+                                <a href="<?php echo PT_LoadAdminLinkSettings('manage-ads'); ?>">Manage live links</a>
                             </li>
                         </ul>
                     </li>
-                    <li <?php echo ($page == 'manage-lives' || $page == 'create-live' || $page == 'edit-live') ? 'class="active"' : ''; ?>>
+                    <!-- <li <?php echo ($page == 'manage-lives' || $page == 'create-live' || $page == 'edit-live') ? 'class="active"' : ''; ?>>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">library_books</i>
                             <span>live links</span>
@@ -347,7 +347,7 @@ if ($page == 'dashboard') {
                                 <a href="<?php echo PT_LoadAdminLinkSettings('manage-lives'); ?>">Manage live link</a>
                             </li>
                         </ul>
-                    </li>
+                    </li> -->
                     <li <?php echo ($page == 'manage_categories' || $page == 'manage_sub_categories') ? 'class="active"' : ''; ?>>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">more_vert</i>
