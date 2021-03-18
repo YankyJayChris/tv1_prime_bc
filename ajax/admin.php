@@ -226,7 +226,7 @@ if ($first == 'import-daily-videos') {
         $ids = array();
         $category_id = 0;
         if (!empty($_POST['category_id'])) {
-            if (in_array($_POST['category_id'], array_keys(ToArray($pt->categories)))) {
+            if (in_array($_POST['category_id'], array_keys(ToArray($pt->video_categories)))) {
                 $category_id = $_POST['category_id'];
             }
         }
@@ -286,7 +286,7 @@ if ($first == 'import-youtube-videos') {
         $ids = array();
         $category_id = 0;
         if (!empty($_POST['category_id'])) {
-            if (in_array($_POST['category_id'], array_keys(ToArray($pt->categories)))) {
+            if (in_array($_POST['category_id'], array_keys(ToArray($pt->video_categories)))) {
                 $category_id = $_POST['category_id'];
             }
         }

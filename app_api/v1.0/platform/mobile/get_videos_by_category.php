@@ -10,7 +10,7 @@
 // +------------------------------------------------------------------------+
 
 
-if (empty($_GET['category_id']) || !in_array($_GET['category_id'], array_keys($categories))) {
+if (empty($_GET['category_id']) || !is_numeric($_GET['category_id'])) {
     $response_data       = array(
         'api_status'     => '400',
         'api_version'    => $api_version,

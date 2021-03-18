@@ -28,7 +28,7 @@
                     <label for="selected_category">Select category</label>
                     <select class="form-control show-tick" id="selected_category" name="selected_category">
                        <?php 
-                        foreach($pt->categories as $key => $category) { 
+                        foreach($pt->video_categories as $key => $category) { 
                             $selected = ($key == $category_filter) ? 'selected' : '';
                         ?>
                         <option value="<?php echo $key?>" <?php echo $selected?>><?php echo $category?></option>

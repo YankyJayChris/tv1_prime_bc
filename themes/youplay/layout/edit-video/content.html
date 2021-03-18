@@ -137,7 +137,7 @@
 					<label class="col-md-12" for="category_id">{{LANG category}}</label>  
 					<div class="col-md-12">
 						<select name="category_id" id="category_id" class="form-control">
-							<?php foreach($pt->categories as $key => $category) { $selected = ($pt->video->category_id == $key) ? 'selected' : '';?>
+							<?php foreach($pt->video_categories as $key => $category) { $selected = ($pt->video->category_id == $key) ? 'selected' : '';?>
 							<option value="<?php echo $key?>" <?php echo $selected?>><?php echo $category?></option>
 							<?php } ?>
 						</select>

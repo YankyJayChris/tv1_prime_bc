@@ -127,46 +127,56 @@
                 }
 
                 else if (data.status == 400) {
+                    form.find('button').attr('disabled', 'false');
                     scrollToTop();
                     message.html('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> Please fill the required info!</div>');
                 }
 
                 else if (data.status == 401) {
+                    form.find('button').attr('disabled', 'false');
                     scrollToTop();
                     message.html('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> Post title is too short!</div>');
                 }
 
                 else if (data.status == 402) {
+                    form.find('button').attr('disabled', 'false');
                     scrollToTop();
                     message.html('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> Post description is too short!</div>');
                 }
 
                 else if (data.status == 403) {
+                    form.find('button').attr('disabled', 'false');
                     scrollToTop();
                     message.html('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> Post text is required!</div>');
                 } 
 
                 else if (data.status == 404) {
+                    form.find('button').attr('disabled', 'false');
                     scrollToTop();
                     message.html('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> The file is too big, please increase your server upload limit in php.ini!</div>');
                 }
 
                 else if (data.status == 405) {
+                    form.find('button').attr('disabled', 'false');
                     scrollToTop();
                     message.html('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> The Image file is Not valid.please select a valid image!</div>');
                 }
 
                 else if (data.status == 406) {
+                    form.find('button').attr('disabled', 'false');
                     scrollToTop();
                     message.html('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> Invalid Category id.Please check your details!</div>');
                 }
 
                 else if (data.status == 500) {
+                    form.find('button').attr('disabled', 'false');
+                    console.log(data);
                     scrollToTop();
                     message.html('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Error found, please try again later!</div>');
                 }
             },
             error: function (data) {
+                form.find('button').attr('disabled', 'false');
                 console.log('An error occurred.');
                 console.log(data);
             },

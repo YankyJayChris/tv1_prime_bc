@@ -151,7 +151,7 @@ $article->image = PT_GetMedia($article->image);
                     scrollToTop();
                     message.html('<div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> New Ad  has been successful saved!</div>');
                     PT_Delay(function(){
-                        window.location.href = PT_LoadAdminLinkSettings('manage-ads');
+                        window.location.href = data.url;
                     },1000);
                 }
 

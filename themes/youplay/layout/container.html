@@ -428,7 +428,7 @@
     <?php } ?>
 		<ul class="sections">
 			<h3>{{LANG categories}}</h3>
-			<?php foreach($pt->categories as $key => $category) { 
+			<?php foreach($pt->video_categories as $key => $category) { 
 					if (1) { ?>
 				<li><a class="category" href="{{LINK videos/category/<?php echo $key?>}}" data-load="?link1=videos&page=category&id=<?php echo $key?>"><?php echo $category?></a></li>
 			<?php } }?>

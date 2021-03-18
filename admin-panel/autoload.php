@@ -61,6 +61,7 @@ $pages = array(
     'sold_videos_analytics',
     'manage-movies',
     'manage-movies-category',
+    'manage-video-categories',
     'manage-comments',
     'manage-custom-pages',
     'add-new-custom-page',
@@ -355,11 +356,14 @@ if ($page == 'dashboard') {
                         </a>
                         <ul class="ml-menu">
                             <li <?php echo ($page == 'manage_categories') ? 'class="active"' : ''; ?>>
-                                <a href="<?php echo PT_LoadAdminLinkSettings('manage_categories'); ?>">Manage Categories</a>
+                                <a href="<?php echo PT_LoadAdminLinkSettings('manage_categories'); ?>">Manage Article Categories</a>
                             </li>
-                            <li <?php echo ($page == 'manage_sub_categories') ? 'class="active"' : ''; ?>>
+                            <li <?php echo ($page == 'manage-video-categories') ? 'class="active"' : ''; ?>>
+                                <a href="<?php echo PT_LoadAdminLinkSettings('manage-video-categories'); ?>">Manage video category</a>
+                            </li>
+                            <!-- <li <?php echo ($page == 'manage_sub_categories') ? 'class="active"' : ''; ?>>
                                 <a href="<?php echo PT_LoadAdminLinkSettings('manage_sub_categories'); ?>">Manage Sub Categories</a>
-                            </li>
+                            </li> -->
                         </ul>
                     </li>
                     <li <?php echo ($page == 'earnings') ? 'class="active"' : ''; ?>>
@@ -374,13 +378,13 @@ if ($page == 'dashboard') {
                             <span>Manage Comments</span>
                         </a>
                     </li>
-                    <li <?php echo ($page == 'bank-receipts') ? 'class="active"' : ''; ?>>
+                    <!-- <li <?php echo ($page == 'bank-receipts') ? 'class="active"' : ''; ?>>
                         <a href="<?php echo PT_LoadAdminLinkSettings('bank-receipts'); ?>">
                             <i class="material-icons">credit_card</i>
                             <span>Manage Bank Receipts</span>
                         </a>
-                    </li>
-                    <li <?php echo ($page == 'manage-video-ads' || $page == 'create-video-ad' || $page == 'edit-video-ad' || $page == 'payment-requests' || $page == 'manage-website-ads' || $page == 'manage-user-ads') ? 'class="active"' : ''; ?>>
+                    </li> -->
+                    <!-- <li <?php echo ($page == 'manage-video-ads' || $page == 'create-video-ad' || $page == 'edit-video-ad' || $page == 'payment-requests' || $page == 'manage-website-ads' || $page == 'manage-user-ads') ? 'class="active"' : ''; ?>>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">attach_money</i>
                             <span>Advertisement</span>
@@ -399,7 +403,7 @@ if ($page == 'dashboard') {
                                 <a href="<?php echo PT_LoadAdminLinkSettings('payment-requests'); ?>">Payment Requests</a>
                             </li>
                         </ul>
-                    </li>
+                    </li> -->
                     <li <?php echo ($page == 'prosys-settings' || $page == 'manage-payments') ? 'class="active"' : ''; ?>>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">star</i>

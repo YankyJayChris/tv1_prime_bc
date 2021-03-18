@@ -126,7 +126,7 @@ if (empty($error)) {
 	    else{
 		    $category_id = 0;
 		    if (!empty($_POST['category_id'])) {
-		        if (in_array($_POST['category_id'], array_keys(get_object_vars($pt->categories)))) {
+		        if (in_array($_POST['category_id'], array_keys(get_object_vars($pt->video_categories)))) {
 		            $category_id = PT_Secure($_POST['category_id']);
 		        }
 		    }
@@ -174,7 +174,7 @@ if (empty($error)) {
 		        'title' => PT_Secure($_POST['title']),
 		        'description' => PT_Secure($_POST['description']),
 		        'tags' => PT_Secure($_POST['tags']),
-		        'category_id' => $category_id,
+		        'category_id' => PT_Secure($_POST['category_id']),
 		        'featured' => $featured,
 		        'thumbnail' => $thumbnail,
 		        'privacy' => $video_privacy,

@@ -148,7 +148,7 @@ if ($db->totalPages != 0) {
                                     <select class="form-control show-tick" id="category_id" name="category_id">
                                         <option value="0" selected>Category</option>
                                         <?php 
-                                        foreach($pt->categories as $key => $category) { 
+                                        foreach($pt->video_categories as $key => $category) { 
                                             $selected = ($key == $category_filter) ? 'selected' : '';
                                         ?>
                                         <option value="<?php echo $key?>" <?php echo $selected?>><?php echo $category?></option>

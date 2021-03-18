@@ -180,7 +180,7 @@ if (!empty($_GET['auto_import'])) {
                                 <div class="col-lg-2 col-md-2">
                                     <select class="form-control show-tick" id="category_id" name="category_id">
                                         <?php 
-                                        foreach($pt->categories as $key => $category) { 
+                                        foreach($pt->video_categories as $key => $category) { 
                                             $selected = ($key == $category_filter) ? 'selected' : '';
                                         ?>
                                         <option value="<?php echo $key?>" <?php echo $selected?>><?php echo $category?></option>

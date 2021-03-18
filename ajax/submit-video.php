@@ -136,7 +136,7 @@ if (empty($error)) {
         $category_id = 0;
         
         if (!empty($_POST['category_id'])) {
-            if (in_array($_POST['category_id'], array_keys(get_object_vars($pt->categories)))) {
+            if (in_array($_POST['category_id'], array_keys(get_object_vars($pt->video_categories)))) {
                 $category_id = PT_Secure($_POST['category_id']);
             }
         }
@@ -187,7 +187,7 @@ if (empty($error)) {
             'tags' => PT_Secure($_POST['tags']),
             'duration' => $duration,
             'video_location' => PT_Secure($_POST['video-location'], 0),
-            'category_id' => $category_id,
+            'category_id' => PT_Secure($_POST['category_id']),
             'thumbnail' => $thumbnail,
             'time' => time(),
             'registered' => date('Y') . '/' . intval(date('m')),

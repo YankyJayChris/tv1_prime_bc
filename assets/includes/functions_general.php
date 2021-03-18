@@ -1515,7 +1515,7 @@ function firebaseNotification($title, $body, $image, $data, $type)
 
     $url = "https://fcm.googleapis.com/fcm/send";
     $token = "/topics/news";
-    $serverKey = 'AAAAGVn-V_8:APA91bGNJj5aQVvkKnBMQ58m-uxvEUE3KP8pnP94hW829REVqQeE8CYfx66ZbJ0d16kJQNeDxN38GGkzgPK1_wwd_6Sn5Qa4f7I7Ehe26zJxP6yjewkC7ByW-YgFAEXszTpxWvD6pnQA';
+    $serverKey = 'AAAA9UqKFnU:APA91bHJTDxCIpsZRBuzTCrVDIm2H4qzrE7z0B3_Gxvu-kYkSHrNOumse9K8ZDE5dSJxMI3I6fc7A1ZpMSB8ZPsrftzQ5hM9sOOMo_0fGZrWKJCCoO-2HDgu0evc-jNY8lZxK0gB-PJ5';
     $mytitle = $title;
     $mybody = $body;
     $myimage = $image;

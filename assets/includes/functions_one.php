@@ -256,7 +256,7 @@ function PT_GetSubscribePlaylistButton($user_id = 0,$playlist = 0) {
 }
 
 function PT_GetVideoByID($video_id = '', $add_views = 0, $likes_dislikes = 0, $run_query = 1, $short_id = 0) {
-    global $pt, $db, $categories;
+    global $pt, $db, $video_categories;
 
     if (empty($video_id)) {
         return false;
@@ -334,7 +334,7 @@ function PT_GetVideoByID($video_id = '', $add_views = 0, $likes_dislikes = 0, $r
         }
         $get_video->time_alpha    = gmdate('d M Y', $get_video->time);
         $get_video->time_ago      = PT_Time_Elapsed_String($get_video->time);
-        $get_video->category_name = (!empty($categories[$get_video->category_id])) ? $categories[$get_video->category_id] : ''; 
+        $get_video->category_name = (!empty($video_categories[$get_video->category_id])) ? $video_categories[$get_video->category_id] : ''; 
         if ($likes_dislikes == 1) {
             $db->where('video_id', $get_video->id);
             $db->where('type', 1);

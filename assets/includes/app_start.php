@@ -248,6 +248,7 @@ $pt->exp_feed    = false;
 $pt->userDefaultAvatar = 'upload/photos/d-avatar.jpg';
 $pt->categories  = ToObject($categories);
 $categories = array();
+$video_categories = array();
 $sub_categories = array();
 
 try {
@@ -307,6 +308,32 @@ try {
 
 }
 $pt->movies_categories = $movies_categories;
+
+
+$video_categories = array();
+try {
+    $all_video_categories = $db->where('type','video_category')->get(T_LANGS);
+    if (!empty($all_video_categories)) {
+    
+        foreach ($all_video_categories as $key => $value) {
+            $array_keys = array_keys($all_video_categories);
+            if ($value->lang_key != 'other') {
+                if (!empty($value->lang_key) && !empty($lang->{$value->lang_key})) {
+                    $video_categories[$value->lang_key] = $lang->{$value->lang_key};
+                }
+            }
+            if (end($array_keys) == $key) {
+                $video_categories['other'] = $lang->other;
+            }
+        }
+    }
+    else{
+        $video_categories['other'] = $lang->other;
+    }
+} catch (Exception $e) {
+
+}
+$pt->video_categories = $video_categories;
 
 
 

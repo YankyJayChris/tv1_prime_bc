@@ -419,7 +419,7 @@ if ($first == 'import-daily-videos') {
         $ids = array();
         $category_id = 0;
         if (!empty($_POST['category_id'])) {
-            if (in_array($_POST['category_id'], array_keys(ToArray($pt->categories)))) {
+            if (in_array($_POST['category_id'], array_keys(ToArray($pt->video_categories)))) {
                 $category_id = $_POST['category_id'];
             }
         }
@@ -459,7 +459,7 @@ if ($first == 'import-daily-videos') {
                 'description' => PT_Secure($description),
                 'tags' => PT_Secure($tags),
                 'duration' => $duration,
-                'category_id' => $category_id,
+                'category_id' => PT_Secure($_POST['category_id']),
                 'daily' => $video_id_,
                 'thumbnail' => $thumb,
                 'time' => time(),
@@ -492,7 +492,7 @@ if ($first == 'import-youtube-videos') {
         $ids = array();
         $category_id = 0;
         if (!empty($_POST['category_id'])) {
-            if (in_array($_POST['category_id'], array_keys(ToArray($pt->categories)))) {
+            if (in_array($_POST['category_id'], array_keys(ToArray($pt->video_categories)))) {
                 $category_id = $_POST['category_id'];
             }
         }
@@ -531,7 +531,7 @@ if ($first == 'import-youtube-videos') {
                 'description' => PT_Secure($description),
                 'tags' => PT_Secure($tags),
                 'duration' => $duration,
-                'category_id' => $category_id,
+                'category_id' => PT_Secure($_POST['category_id']),
                 'youtube' => $video_id_,
                 'thumbnail' => $thumb,
                 'time' => time(),
@@ -987,6 +987,7 @@ if ($first == 'new-ads') {
         }
 
         $data['status'] = ($insert) ? 200 : 500;
+        $data['error'] = $error;
         $data['url']    = $pt->config->site_url . '/admin-cp/manage-ads';
     } else {
         $data['status'] = $error;
@@ -1059,8 +1060,17 @@ if ($first == 'new-live-link') {
             $insert     = $db->insert(T_LIVE_LINKS, $insert_data);
         }
 
+        $ad = $db->where('id', PT_Secure($insert))->getOne(T_LIVE_LINKS);
+        if ($ad->status == '1') {
+            $liveData = (array) $ad;
+            $imageUrl = PT_GetMedia($ad->image);
+            firebaseNotification($ad->title, $ad->description, $imageUrl, $liveData, "live");
+        }
+
+
         $data['status'] = ($insert) ? 200 : 500;
-        $data['url']    = $pt->config->site_url . '/admin-cp/manage-live';
+        $data['url']    = $pt->config->site_url . '/admin-cp/manage-lives';
+
     } else {
         $data['status'] = $error;
     }
@@ -1144,6 +1154,7 @@ if ($first == 'update-ad') {
         $ad = $db->where('id', PT_Secure($_POST['id']))->get(T_APPADS);
 
         $data['status'] = ($insert && empty($error)) ? 200 : 500;
+        $data['url']    = PT_Link('admin-cp/manage-ads');
     } else {
         $data['status'] = $error;
     }
@@ -1224,9 +1235,17 @@ if ($first == 'update-live') {
         }
 
         $insert         = $db->where('id', $id)->update(T_LIVE_LINKS, $update_data);
-        $ad = $db->where('id', PT_Secure($_POST['id']))->get(T_LIVE_LINKS);
+        $ad = $db->where('id', PT_Secure($_POST['id']))->getOne(T_LIVE_LINKS);
+        if ($ad->status == '1') {
+            $custom_data = json_encode($update_data);
+            $liveData = (array) $ad;
+            $imageUrl = PT_GetMedia($ad->image);
+            firebaseNotification($ad->title, $ad->description, $imageUrl, $liveData, "live");
+        }
 
         $data['status'] = ($insert && empty($error)) ? 200 : 500;
+        $data['error'] = $error;
+        $data['url']    = PT_Link('admin-cp/manage-lives');
     } else {
         $data['status'] = $error;
     }
@@ -1350,8 +1369,18 @@ if ($first == 'new-article') {
             $insert     = $db->insert(T_POSTS, $insert_data);
         }
 
+        if($insert){
+
+            $article = $db->where('id', PT_Secure($insert))->get(T_POSTS);
+            $imageUlr = $pt->config->site_url .'/'. $insert_data['image'];
+            if ($active == '1') {
+                $custom_data = json_encode($insert_data);
+                firebaseNotification($insert_data['title'], $insert_data["description"], $imageUlr, "$id", "article");
+            }
+        }
+
         $data['status'] = ($insert) ? 200 : 500;
-        $data['url']    = PT_Link('articles/read/' . PT_URLSlug($insert_data['title'], $insert));
+        $data['url']    = PT_Link('admin-cp/manage-articles');
     } else {
         $data['status'] = $error;
     }
@@ -1437,7 +1466,7 @@ if ($first == 'update-article') {
             firebaseNotification($update_data['title'], $update_data["description"], $imageUlr, "$id", "article");
         }
         $data['status'] = ($insert && empty($error)) ? 200 : 500;
-        $data['url']    = PT_Link('articles/read/' . PT_URLSlug($update_data['title'], $id));
+        $data['url']    = PT_Link('admin-cp/manage-articles');
     } else {
         $data['status'] = $error;
     }
@@ -2294,7 +2323,7 @@ if ($first == 'import-twitch-videos') {
         $ids = array();
         $category_id = 0;
         if (!empty($_POST['category_id'])) {
-            if (in_array($_POST['category_id'], array_keys(ToArray($pt->categories)))) {
+            if (in_array($_POST['category_id'], array_keys(ToArray($pt->video_categories)))) {
                 $category_id = $_POST['category_id'];
             }
         }
@@ -2542,6 +2571,25 @@ if ($first == 'add_movie_category') {
     }
     if ($add == true && !empty($insert_data)) {
         $insert_data['type'] = 'movie_category';
+        $id = $db->insert(T_LANGS, $insert_data);
+        $db->where('id', $id)->update(T_LANGS, array('lang_key' => $id));
+        $data = array('status' => 200);
+    }
+}
+
+if ($first == 'add_video_category') {
+    $data['status'] = 400;
+    $data['message'] = 'Please check your details';
+    $add = false;
+    $insert_data = array();
+    foreach ($pt->langs as $key => $lang) {
+        if (!empty($_POST[$lang])) {
+            $insert_data[$lang] = PT_Secure($_POST[$lang]);
+            $add = true;
+        }
+    }
+    if ($add == true && !empty($insert_data)) {
+        $insert_data['type'] = 'video_category';
         $id = $db->insert(T_LANGS, $insert_data);
         $db->where('id', $id)->update(T_LANGS, array('lang_key' => $id));
         $data = array('status' => 200);
@@ -3161,7 +3209,7 @@ if ($first == 'auto_delete') {
 
 
         $videos = $db->where($where)->get(T_VIDEOS);
-    } elseif (!empty($_GET['selected_type']) && $_GET['selected_type'] == 'category' && !empty($_GET['selected_category']) && in_array($_GET['selected_category'], array_keys(ToArray($pt->categories))) && !empty($_GET['selected_time']) && in_array($_GET['selected_time'], array('all', 'today', 'this_week', 'this_month', 'this_year'))) {
+    } elseif (!empty($_GET['selected_type']) && $_GET['selected_type'] == 'category' && !empty($_GET['selected_category']) && in_array($_GET['selected_category'], array_keys(ToArray($pt->video_categories))) && !empty($_GET['selected_time']) && in_array($_GET['selected_time'], array('all', 'today', 'this_week', 'this_month', 'this_year'))) {
 
         $category_filter = PT_Secure($_GET['selected_category']);
         $where = "`category_id` = '$category_filter'";
@@ -3400,6 +3448,30 @@ if ($first == 'delete-ad') {
             }
 
             $delete  = $db->where('id', PT_Secure($_POST['id']))->delete(T_APPADS);
+
+
+            if ($delete) {
+                $data = array('status' => 200);
+            }
+        } else {
+            $data['status'] = $error;
+        }
+    }
+}
+
+if ($first == 'delete-live') {
+    $error = false;
+    if (!empty($_POST['id'])) {
+        $ad = $db->where('id', PT_Secure($_POST['id']))->getOne(T_LIVE_LINKS);
+        if (!empty($ad)) {
+            $s3      = ($pt->config->s3_upload == 'on' || $pt->config->ftp_upload = 'on' || $pt->config->spaces == 'on') ? true : false;
+            if (file_exists($ad->image)) {
+                unlink($ad->image);
+            } else if ($s3 === true) {
+                PT_DeleteFromToS3($ad->image);
+            }
+
+            $delete  = $db->where('id', PT_Secure($_POST['id']))->delete(T_LIVE_LINKS);
 
 
             if ($delete) {

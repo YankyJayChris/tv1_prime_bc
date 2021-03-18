@@ -45,7 +45,7 @@
 			<div class="form-group col-lg-8">
 				<label class="col-md-12 bold" for="type">{{LANG categories}}</label>
 				<div class="col-md-12">
-					<?php foreach($pt->categories as $key => $category) { ?>
+					<?php foreach($pt->video_categories as $key => $category) { ?>
 					    <div class="col-md-4 no-padding-left">
 							<label for="category_<?php echo $key; ?>">
 							<input onchange="ChangePage()" type="checkbox" name="category[]" id="category_<?php echo $key; ?>" value="<?php echo $key; ?>" <?php echo (isset($_POST['category']) && in_array($key, $_POST['category'])) ? 'checked': ''?>>
